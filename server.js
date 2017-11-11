@@ -55,6 +55,8 @@ app.post('/input', upload.single('data'), function (req, res) {
                         res.json(JSON.parse(body).map((entry) => entry.word));
                     });
                 }
+                fs.unlinkSync(filepath);
+                fs.unlinkSync(filepath + '.wav');
             });
         })
         .save(filepath + '.wav');
