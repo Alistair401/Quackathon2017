@@ -39,7 +39,17 @@ function record() {
                 data: fd,
                 contentType: false,
                 success: function (data) {
-                    map.setView([data.lat, data.lng], 13);
+                    if (data.command == 'location') {
+                        map.fitBounds([[data.bounds.northeast.lat, data.bounds.northeast.lng],
+                                       [data.bounds.southwest.lat, data.bounds.southwest.lng]]);
+                    }
+                    if (data.command == 'zoom') {
+                        if (data.wish == 'in') {
+                            map.zoomIn(-5);
+                        } else {
+                            map.zoomOut(5);
+                        }
+                    }
                 }
             });
             media_chunks = null;

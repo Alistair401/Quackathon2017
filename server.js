@@ -47,13 +47,24 @@ app.post('/input', upload.single('data'), function (req, res) {
                     request.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(wish) + '&key=' + 'AIzaSyAdc-OUimLZdJPxDCpHMxdxNOQFvB52Gj0', function (error, response, body) {
                         var locations = JSON.parse(body).results;
                         if (locations.length > 0) {
-                            res.json(locations[0].geometry.location);
+                            res.json({
+                                command: command,
+                                geometry: locations[0].geometry.location,
+                                bounds: locations[0].geometry.bounds
+                            });
                         }
                     });
                 } else if (command == 'filter') {
                     request.get('https://api.datamuse.com/words?ml=' + encodeURIComponent(wish), function (error, response, body) {
                         res.json(JSON.parse(body).map((entry) => entry.word));
                     });
+                } else if (command == 'zoom') {
+                    if (wish == 'in' || wish == 'out') {
+                        res.json({
+                            command: command,
+                            wish: wish
+                        });
+                    }
                 }
                 fs.unlinkSync(filepath);
                 fs.unlinkSync(filepath + '.wav');
