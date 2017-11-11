@@ -50,6 +50,10 @@ function record() {
                             map.zoomOut(5);
                         }
                     }
+                    if (data.command == 'crimes') {
+                        var coords = map.getCenter();
+                        getCrime(coords.lat, coords.lng, data.wish);
+                    }
                 }
             });
             media_chunks = null;
@@ -62,6 +66,22 @@ function record() {
     }
 }
 
+function getCrime(lat, lng, filter) {
+    $.get('./crime', {
+        lat: lat,
+        lng: lng,
+        filter: filter
+    }, (data, status, jqXHR) => {
+        data.forEach((entry) => {
+            createMarker(entry.lat, entry.lng, entry.category);
+        })
+    });
+}
+
+function createMarker(lat, lng, category) {
+    L.marker([lat, lng]).addTo(map);
+}
+
 $(document).ready(() => {
     map = L.Wrld.map("map", "7a72309b1aeda260fbdb2265317f6f79", {
         center: [56.458882, -2.981787],
@@ -69,12 +89,12 @@ $(document).ready(() => {
         zoomControl: true
     });
     $(window).bind('storage', function (e) {
-        if (localStorage.getItem('client_coords') !== null){
+        if (localStorage.getItem('client_coords') !== null) {
             var retrievedObject = localStorage.getItem('client_coords');
             var coords = JSON.parse(retrievedObject);
             var lat = coords[0];
             var lon = coords[1];
-            setTimeout(function() {
+            setTimeout(function () {
                 map.setView([lat, lon], 25, {
                     animate: true
                 });
@@ -83,20 +103,23 @@ $(document).ready(() => {
     });
 });
 
-// Geolocation functionality
-var store = require('browser-store');
-if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-        var location = {'lat': position.coords.latitude, 'lon':position.coords.longitude};
-        store.put('client_coords', JSON.stringify(location), function (err) {
-            //=> err === null
-            store.get('client_coords', function (err, value) {
-                //=> err === null
-                if (value !== null){//=> value === {'lat': lat, 'lon':lon}
-                }
-            })
-        })
-    });
-} else {
-    /* geolocation IS NOT available */
-}
+//// Geolocation functionality
+//var store = require('browser-store');
+//if ("geolocation" in navigator) {
+//    navigator.geolocation.getCurrentPosition(function (position) {
+//        var location = {
+//            'lat': position.coords.latitude,
+//            'lon': position.coords.longitude
+//        };
+//        store.put('client_coords', JSON.stringify(location), function (err) {
+//            //=> err === null
+//            store.get('client_coords', function (err, value) {
+//                //=> err === null
+//                if (value !== null) { //=> value === {'lat': lat, 'lon':lon}
+//                }
+//            })
+//        })
+//    });
+//} else {
+//    /* geolocation IS NOT available */
+//}
