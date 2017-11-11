@@ -6,6 +6,8 @@ var media_stream = null;
 var media_recorder = null;
 var media_chunks = null;
 
+var map;
+
 function record() {
     if (!recording) {
         recording = true;
@@ -37,7 +39,7 @@ function record() {
                 data: fd,
                 contentType: false,
                 success: function (data) {
-                    // TODO
+                    map.setView([data.lat, data.lng], 13);
                 }
             });
             media_chunks = null;
@@ -49,3 +51,11 @@ function record() {
         });
     }
 }
+
+$(document).ready(() => {
+    map = L.Wrld.map("map", "7a72309b1aeda260fbdb2265317f6f79", {
+        center: [56.458882, -2.981787],
+        zoom: 28.9,
+        zoomControl: true
+    });
+});

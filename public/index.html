@@ -5,34 +5,15 @@
 
 <head>
     <script src="https://cdn-webgl.wrld3d.com/wrldjs/dist/latest/wrld.js"></script>
-    <script src="https://cdn-webgl.wrld3d.com/wrldjs/dist/latest/wrld.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.1/leaflet.css" rel="stylesheet" />
     <script src="/jquery-3.2.1.js"></script>
     <script src="/index.js"></script>
     <link href="/index.css" rel="stylesheet" />
 </head>
 
 <body>
-
-    <iframe src="https://maps.wrld3d.com/fullembed/?mapscene=855ea39" frameborder="0" style="border:0;
-                    position:fixed;
-                    left:0;
-                    right:0;
-                    top:0;
-                    bottom:0;
-                    width:100%;
-                    height:100%" allowfullscreen>
-
-            </iframe>
+    <div id="map"></div>
     <div id='mic'><button onclick=record();>Mic</button></div>
-
-    <script>
-        var map = L.Wrld.map("map", "7a72309b1aeda260fbdb2265317f6f79", {
-            center: [56.458882, -2.981787],
-            zoom: 28.9,
-            zoomControl: true
-        });
-
-    </script>
 
 </body>
 

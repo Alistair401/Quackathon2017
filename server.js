@@ -38,10 +38,23 @@ app.post('/input', upload.single('data'), function (req, res) {
             var audioStream = fs.createReadStream(filepath + '.wav');
             var client = new BingSpeechClient(bingKey);
             client.recognizeStream(audioStream).then((response) => {
-                console.log(response.results[0].name);
-                request.get('https://api.datamuse.com/words?ml=' + encodeURIComponent(response.results[0].name), function (error, response, body) {
-                    console.log(JSON.parse(body).map((entry) => entry.word));
-                });
+                var sentence = response.results[0].name;
+                var command = sentence.split(' ')[0].trim();
+                var wish = sentence.replace(command, '').trim();
+                console.log(command);
+                console.log(wish);
+                if (command == 'location') {
+                    request.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(wish) + '&key=' + 'AIzaSyAdc-OUimLZdJPxDCpHMxdxNOQFvB52Gj0', function (error, response, body) {
+                        var locations = JSON.parse(body).results;
+                        if (locations.length > 0) {
+                            res.json(locations[0].geometry.location);
+                        }
+                    });
+                } else if (command == 'filter') {
+                    request.get('https://api.datamuse.com/words?ml=' + encodeURIComponent(wish), function (error, response, body) {
+                        res.json(JSON.parse(body).map((entry) => entry.word));
+                    });
+                }
             });
         })
         .save(filepath + '.wav');
@@ -71,22 +84,22 @@ var currentLocation = '';
 var currentCategory = '';
 
 /* Construct API url for England and Wales */
-function buildEnglandWalesApiUrl(latitude, longitude){
+function buildEnglandWalesApiUrl(latitude, longitude) {
     var CONST_POLICE_URL = 'https://data.police.uk/api/crimes-street/all-crime?lat=';
     var CONST_POLICE_URL_2 = '&lng=';
-    return CONST_POLICE_URL+latitude+CONST_POLICE_URL_2+longitude;
+    return CONST_POLICE_URL + latitude + CONST_POLICE_URL_2 + longitude;
 }
 
 /* Make request of USA Crime API (https://github.com/contra/spotcrime) */
-function requestCategoryUS (){
-    spotcrime.getCrimes(loc, radius, function(err, crimes){
+function requestCategoryUS() {
+    spotcrime.getCrimes(loc, radius, function (err, crimes) {
 
     });
 }
 /* Make request of UK Crime API (https://data.police.uk/docs/)*/
 function requestCategoryUK(apiURL, chosenCategory) {
-    request.get(apiURL, function(error, response, body) {
-        if (response.statusCode === 200){
+    request.get(apiURL, function (error, response, body) {
+        if (response.statusCode === 200) {
             var result = JSON.parse(body);
             extractAllCrimeRequests(result, chosenCategory);
         }
@@ -114,7 +127,3 @@ var categoryURL = buildEnglandWalesApiUrl(londonLatLng[0], londonLatLng[1]);
 requestCategoryUK(categoryURL, 'burglary');
 
 /* Add markers of crimes to map */
-
-
-
-
