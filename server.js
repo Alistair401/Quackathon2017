@@ -24,8 +24,6 @@ app.post('/input', upload.single('data'), function (req, res) {
     res.send('POST request to input');
 });
 
-app.use('/',express.static('public'));
-
 app.listen(3000);
 
 // TODO: Feed in coordinates dynamically
