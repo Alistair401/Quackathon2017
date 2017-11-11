@@ -68,6 +68,19 @@ $(document).ready(() => {
         zoom: 28.9,
         zoomControl: true
     });
+    $(window).bind('storage', function (e) {
+        if (localStorage.getItem('client_coords') !== null){
+            var retrievedObject = localStorage.getItem('client_coords');
+            var coords = JSON.parse(retrievedObject);
+            var lat = coords[0];
+            var lon = coords[1];
+            setTimeout(function() {
+                map.setView([lat, lon], 25, {
+                    animate: true
+                });
+            }, 1000);
+        }
+    });
 });
 
 // Geolocation functionality
