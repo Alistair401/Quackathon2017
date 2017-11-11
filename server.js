@@ -101,11 +101,6 @@ app.post('/input', upload.single('data'), function (req, res) {
 
 app.listen(3000);
 
-// TODO: Feed in countries dynamically
-var englandWalesCountry = "RUK";
-var scotlandCountry = "SC";
-var usaCountry = "US";
-
 // TODO: Feed in categories dynamically
 var burglaryCategory = 'burglary';
 var arsonCategory = 'criminal-damage-arson';
@@ -115,11 +110,15 @@ var violentCategory = 'violent-crime';
 var dundeeLatLng = [56.4586, 2.9827];
 var londonLatLng = [51.5074, 0.1278];
 var manchesterLatLng = [53.4808, 2.2426];
+var newyorkLatLng = [40.7128, 74.0060];
+
 
 
 var currentCountry = '';
 var currentLocation = '';
 var currentCategory = '';
+
+
 
 /* Construct API url for England and Wales */
 function buildEnglandWalesApiUrl(latitude, longitude) {
@@ -127,24 +126,26 @@ function buildEnglandWalesApiUrl(latitude, longitude) {
     var CONST_POLICE_URL_2 = '&lng=';
     return CONST_POLICE_URL + latitude + CONST_POLICE_URL_2 + longitude;
 }
-
 /* Make request of USA Crime API (https://github.com/contra/spotcrime) */
-function requestCategoryUS() {
-    spotcrime.getCrimes(loc, radius, function (err, crimes) {
-
+function requestCategoryUS(coords, chosenCategory) {
+    spotcrime.getCrimes(coords, 1, function (err, crimes) {
+        var results = JSON.parse(crimes);
+        return extractAllCrimeRequestsUK(results, chosenCategory, 'US');
     });
 }
 /* Make request of UK Crime API (https://data.police.uk/docs/)*/
 function requestCategoryUK(apiURL, chosenCategory, success) {
     request.get(apiURL, function (error, response, body) {
         if (response.statusCode === 200) {
+
             var result = JSON.parse(body);
-            success(extractAllCrimeRequests(result, chosenCategory));
+            success(extractAllCrimeRequestsUK(result, chosenCategory));
         }
     });
 }
+
 /* Add all crime results of chosen category to global array */
-function extractAllCrimeRequests(result, chosenCategory) {
+function extractAllCrimeRequestsUK(result, chosenCategory) {
     return result.filter((entry) => entry.category == chosenCategory).map((entry) => {
         return {
             category: entry.category,
@@ -154,10 +155,45 @@ function extractAllCrimeRequests(result, chosenCategory) {
     });
 }
 
-/* Selection of country - END RESULT: country of location */
-/* Selection of location - END RESULT: coords of location */
-/* Selection of category - END RESULT: array of crimes and coords*/
-//var categoryURL = buildEnglandWalesApiUrl(londonLatLng[0], londonLatLng[1]);
-//requestCategoryUK(categoryURL, 'burglary');
+/* Return all crime results of chosen category as array */
+function extractAllCrimeRequestsUS(results, chosenCategory) {
+    var crimeResults = [];
+    for (var i = 0; i < results.length; i++) {
+        var currentRecord = results[i];
 
+        /* Extract crime categories and coordinates */
+        var category;
+        var coords;
+
+        category = currentRecord.type;
+        coords = [currentRecord.latitude, currentRecord.longitude];
+
+        /* Store category and coords if they are relevant */
+        if (category === chosenCategory) {
+            crimeResults.push({
+                'cat': category,
+                'coords': coords
+            });
+        }
+    }
+    return crimeResults;
+}
+
+/**
+ * INPUT FROM VOICE WILL BE (crime category) OR (location)
+ */
+var location = false;
+var crime_category = false;
+
+if (location) {
+    // get [lat,lng] coords
+    // get country for api choice
+
+} else if (crime_category) { // use client location by default
+    var coordObject = localStorage.getItem('client_coords');
+    var coords = JSON.parse(coordObject);
+    var ukURL = buildEnglandWalesApiUrl(coords[0], coords[1]);
+    var crimeArrayUK = requestCategoryUK(ukURL, crime_category);
+
+}
 /* Add markers of crimes to map */
