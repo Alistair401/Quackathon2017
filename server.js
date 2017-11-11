@@ -36,7 +36,12 @@ app.post('/input', upload.single('data'), function (req, res) {
         .on('end', () => {
             var audioStream = fs.createReadStream(filepath + '.wav');
             var client = new BingSpeechClient(bingKey);
-            client.recognizeStream(audioStream).then(response => console.log(response.results[0].name));
+            client.recognizeStream(audioStream).then((response) => {
+                console.log(response.results[0].name);
+                request.get('https://api.datamuse.com/words?ml=' + encodeURIComponent(response.results[0].name), function (error, response, body) {
+                    console.log(JSON.parse(body).map((entry) => entry.word));
+                });
+            });
         })
         .save(filepath + '.wav');
 });
