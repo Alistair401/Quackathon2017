@@ -59,3 +59,21 @@ $(document).ready(() => {
         zoomControl: true
     });
 });
+
+// Geolocation functionality
+var store = require('browser-store');
+if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+        var location = {'lat': position.coords.latitude, 'lon':position.coords.longitude};
+        store.put('client_coords', JSON.stringify(location), function (err) {
+            //=> err === null
+            store.get('client_coords', function (err, value) {
+                //=> err === null
+                if (value !== null){//=> value === {'lat': lat, 'lon':lon}
+                }
+            })
+        })
+    });
+} else {
+    /* geolocation IS NOT available */
+}

@@ -12,6 +12,8 @@ This project includes Node.js, and requires the following packages:
 ```
 npm express
 npm request
+npm browser-store
+npm spotcrime
 ```
 ## License
 
