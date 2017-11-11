@@ -43,21 +43,6 @@ var manchesterLatLng = [53.4808, 2.2426];
 
 var crimeResults = [];
 
-// Make request of police API
-request.get(submittedURL, function (error, response, body) {
-    if (response.statusCode === 200) {
-        var result = JSON.parse(body);
-        for (var i = 0; i < result.length; i++) {
-            var currentRecord = result[i];
-            var category = currentRecord.category;
-            var coords = [currentRecord.location.latitude, currentRecord.location.longitude];
-            crimeResults.push({
-                'cat': category,
-                'coords': coords
-            });
-        }
-    }
-});
 
 /* Construct API url for England and Wales (https://data.police.uk/docs/) */
 function buildEnglandWalesApiUrl(latitude, longitude){
