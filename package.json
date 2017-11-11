@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Alistair401/Quackathon2017#readme",
   "dependencies": {
+    "bingspeech-api-client": "^2.3.1",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "fluent-ffmpeg": "^2.1.2",
