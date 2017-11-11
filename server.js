@@ -44,7 +44,17 @@ app.get('/crime', function (req, res) {
                 var political = results[0].formatted_address.toLowerCase().trim();
                 if (political.toLowerCase().includes('uk')) {
                     var englandWalesURL = buildEnglandWalesApiUrl(req.query.lat, req.query.lng);
-                    requestCategoryUK(englandWalesURL, req.query.filter, (info) => {
+                    requestCategoryUK(englandWalesURL, (info) => {
+                        console.log('DEBUG: crimes found: ' + info.length);
+                        res.json(info);
+                    });
+                }
+                if (political.toLowerCase().includes('usa')) {
+                    var loc = {
+                        lat: parseFloat(req.query.lat).toFixed(5),
+                        lon: parseFloat(req.query.lng).toFixed(5)
+                    }
+                    requestCategoryUS(loc, (info) => {
                         console.log('DEBUG: crimes found: ' + info.length);
                         res.json(info);
                     });
@@ -113,11 +123,9 @@ var manchesterLatLng = [53.4808, 2.2426];
 var newyorkLatLng = [40.7128, 74.0060];
 
 
-
 var currentCountry = '';
 var currentLocation = '';
 var currentCategory = '';
-
 
 
 /* Construct API url for England and Wales */
@@ -127,56 +135,41 @@ function buildEnglandWalesApiUrl(latitude, longitude) {
     return CONST_POLICE_URL + latitude + CONST_POLICE_URL_2 + longitude;
 }
 /* Make request of USA Crime API (https://github.com/contra/spotcrime) */
-function requestCategoryUS(coords, chosenCategory) {
-    spotcrime.getCrimes(coords, 1, function (err, crimes) {
-        var results = JSON.parse(crimes);
-        return extractAllCrimeRequestsUK(results, chosenCategory, 'US');
+function requestCategoryUS(loc, success) {
+    spotcrime.getCrimes(loc, 10, function (err, crimes) {
+        success(processCrimeResults(crimes, 'usa'));
     });
 }
 /* Make request of UK Crime API (https://data.police.uk/docs/)*/
-function requestCategoryUK(apiURL, chosenCategory, success) {
+function requestCategoryUK(apiURL, success) {
     request.get(apiURL, function (error, response, body) {
         if (response.statusCode === 200) {
-
-            var result = JSON.parse(body);
-            success(extractAllCrimeRequestsUK(result, chosenCategory));
+            var results = JSON.parse(body);
+            success(processCrimeResults(results, 'uk'));
         }
     });
 }
 
 /* Add all crime results of chosen category to global array */
-function extractAllCrimeRequestsUK(result, chosenCategory) {
-    return result.filter((entry) => entry.category == chosenCategory).map((entry) => {
-        return {
-            category: entry.category,
-            lat: entry.location.latitude,
-            lng: entry.location.longitude
-        }
-    });
-}
-
-/* Return all crime results of chosen category as array */
-function extractAllCrimeRequestsUS(results, chosenCategory) {
-    var crimeResults = [];
-    for (var i = 0; i < results.length; i++) {
-        var currentRecord = results[i];
-
-        /* Extract crime categories and coordinates */
-        var category;
-        var coords;
-
-        category = currentRecord.type;
-        coords = [currentRecord.latitude, currentRecord.longitude];
-
-        /* Store category and coords if they are relevant */
-        if (category === chosenCategory) {
-            crimeResults.push({
-                'cat': category,
-                'coords': coords
-            });
-        }
+function processCrimeResults(result, political) {
+    if (political == 'usa') {
+        return result.map((entry) => {
+            return {
+                category: entry.type,
+                lat: entry.lat,
+                lng: entry.lon
+            }
+        });
+    } else if (political == 'uk') {
+        return result.map((entry) => {
+            return {
+                category: entry.category,
+                lat: entry.latitude,
+                lng: entry.longitude
+            }
+        });
     }
-    return crimeResults;
+    return [];
 }
 
 /**
