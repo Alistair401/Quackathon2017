@@ -21,8 +21,10 @@ var command = ffmpeg();
 bingEndpoint = 'https://speech.platform.bing.com/speech/recognition/interactive/cognitiveservices/v1?language=en-GB';
 bingKey = '26508f7a24f3407faf2eb20928a7b7ac';
 
-ffmpeg.setFfmpegPath(__dirname + '/ffmpeg.exe');
-ffmpeg.setFfprobePath(__dirname + '/ffprobe.exe');
+if (fs.existsSync(__dirname + '/ffmpeg.exe') && fs.existsSync(__dirname + '/ffmpeg.exe')) {
+    ffmpeg.setFfmpegPath(__dirname + '/ffmpeg.exe');
+    ffmpeg.setFfprobePath(__dirname + '/ffprobe.exe');
+}
 
 app.use('/', express.static('public'));
 app.use(bodyParser.urlencoded({
