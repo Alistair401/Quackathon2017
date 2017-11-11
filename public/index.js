@@ -103,28 +103,7 @@ $(document).ready(() => {
     });
 });
 
-<<<<<<< HEAD
-//// Geolocation functionality
-//var store = require('browser-store');
-//if ("geolocation" in navigator) {
-//    navigator.geolocation.getCurrentPosition(function (position) {
-//        var location = {
-//            'lat': position.coords.latitude,
-//            'lon': position.coords.longitude
-//        };
-//        store.put('client_coords', JSON.stringify(location), function (err) {
-//            //=> err === null
-//            store.get('client_coords', function (err, value) {
-//                //=> err === null
-//                if (value !== null) { //=> value === {'lat': lat, 'lon':lon}
-//                }
-//            })
-//        })
-//    });
-//} else {
-//    /* geolocation IS NOT available */
-//}
-=======
+
 // Geolocation functionality
 var store = require('browser-store');
 if ("geolocation" in navigator) {
@@ -142,4 +121,3 @@ if ("geolocation" in navigator) {
 } else {
     /* geolocation IS NOT available */
 }
->>>>>>> d88df18731a05cd6350e49b37c07438b1149c331
