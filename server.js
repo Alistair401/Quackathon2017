@@ -75,11 +75,6 @@ app.post('/input', upload.single('data'), function (req, res) {
 
 app.listen(3000);
 
-// TODO: Feed in countries dynamically
-var englandWalesCountry = "RUK";
-var scotlandCountry = "SC";
-var usaCountry = "US";
-
 // TODO: Feed in categories dynamically
 var burglaryCategory = 'burglary';
 var arsonCategory = 'criminal-damage-arson';
@@ -89,12 +84,7 @@ var violentCategory = 'violent-crime';
 var dundeeLatLng = [56.4586, 2.9827];
 var londonLatLng = [51.5074, 0.1278];
 var manchesterLatLng = [53.4808, 2.2426];
-
-//var crimeResults = [];
-
-var currentCountry = '';
-var currentLocation = '';
-var currentCategory = '';
+var newyorkLatLng = [40.7128, 74.0060];
 
 /* Construct API url for England and Wales */
 function buildEnglandWalesApiUrl(latitude, longitude) {
@@ -102,7 +92,6 @@ function buildEnglandWalesApiUrl(latitude, longitude) {
     var CONST_POLICE_URL_2 = '&lng=';
     return CONST_POLICE_URL + latitude + CONST_POLICE_URL_2 + longitude;
 }
-
 /* Make request of USA Crime API (https://github.com/contra/spotcrime) */
 function requestCategoryUS(coords, chosenCategory) {
     spotcrime.getCrimes(coords, 1, function (err, crimes) {
@@ -146,22 +135,21 @@ function extractAllCrimeRequests(results, chosenCategory, countryCode) {
     return crimeResults;
 }
 
-/* Selection of country - END RESULT: country of location */
-/* Selection of location - END RESULT: coords of location */
-/* Selection of category - END RESULT: array of crimes and coords*/
-var categoryURL = buildEnglandWalesApiUrl(londonLatLng[0], londonLatLng[1]);
-var crimeArray = requestCategoryUK(categoryURL, 'burglary');
-
-
 /**
  * INPUT FROM VOICE WILL BE (crime category) OR (location)
  */
 var location = false;
 var crime_category = false;
+
 if (location){
     // get [lat,lng] coords
-    // get
-} else if (crime_category){
+    // get country for api choice
+
+} else if (crime_category){ // use client location by default
+    var coordObject = localStorage.getItem('client_coords');
+    var coords = JSON.parse(coordObject);
+    var ukURL = buildEnglandWalesApiUrl(coords[0], coords[1]);
+    var crimeArrayUK = requestCategoryUK(ukURL, crime_category);
 
 }
 /* Add markers of crimes to map */
