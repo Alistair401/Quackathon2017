@@ -22,7 +22,7 @@ function record() {
                 }
             });
     } else {
-        record = false;
+        recording = false;
         media_recorder.stop();
         media_recorder.onstop = function (e) {
             var blob = new Blob(chunks, {
@@ -40,6 +40,9 @@ function record() {
                     // TODO
                 }
             });
+            media_chunks = null;
+            media_stream = null;
+            media_recorder = null;
         }
         media_stream.getTracks().forEach((track) => {
             track.stop();
