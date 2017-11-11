@@ -27,32 +27,19 @@ app.post('/input', upload.single('data'), function (req, res) {
     var filepath = 'uploads/' + req.file.filename;
     ffmpeg(filepath)
         .save(filepath + '.wav');
-//    var requestOptions = {
-//        url: bingEndpoint,
-//        'Content-Type': audio/wav,
-//        'Ocp-Apim-Subscription-Key': bingKey,
-//        'Transfer-Encoding': chunked
-//    }
     var audioStream = fs.createReadStream(myFileName);
     var client = new BingSpeechClient(bingKey);
     client.recognizeStream(audioStream).then(response => console.log(response.results));
     res.send('POST request to input');
 });
 
-app.use('/', express.static('public'));
 
 app.listen(3000);
-
-// TODO: Feed in coordinates dynamically
-var CONST_POLICE_URL = 'https://data.police.uk/api/crimes-street/all-crime?lat=';
-var CONST_POLICE_URL_2 = '&lng=';
-var CONST_MONTH = '&date=2017-01';
 
 var dundeeLatLng = [56.4586, 2.9827];
 var londonLatLng = [51.5074, 0.1278];
 var manchesterLatLng = [53.4808, 2.2426];
 
-var submittedURL = CONST_POLICE_URL + londonLatLng[0] + CONST_POLICE_URL_2 + londonLatLng[1] + CONST_MONTH;
 
 var crimeResults = [];
 
@@ -71,13 +58,40 @@ request.get(submittedURL, function (error, response, body) {
         }
     }
 });
-/*request.get(submittedURL)
-    .on('response', function(response) {
-        //console.log(response);
-    })
-    .on('body', function(body) {
-        console.log(body);
-    })
-    .on('error', function(err) {
-        //console.log(err);
-})*/
+
+/* Construct API url for England and Wales (https://data.police.uk/docs/) */
+function buildEnglandWalesApiUrl(latitude, longitude){
+    var CONST_POLICE_URL = 'https://data.police.uk/api/crimes-street/all-crime?lat=';
+    var CONST_POLICE_URL_2 = '&lng=';
+    return CONST_POLICE_URL+latitude+CONST_POLICE_URL_2+longitude;
+}
+
+/* Make request of police API */
+function requestCategory(apiURL, chosenCategory) {
+    request.get(apiURL, function(error, response, body) {
+        if (response.statusCode === 200){
+            var result = JSON.parse(body);
+            extractAllCrimeRequests(result, chosenCategory);
+        }
+    });
+}
+/* Add all crime results of chosen category to global array */
+function extractAllCrimeRequests(result, chosenCategory) {
+    for (var i = 0 ; i < result.length ; i++ ){
+        var currentRecord = result[i];
+        var category = currentRecord.category;
+        var coords = [currentRecord.location.latitude, currentRecord.location.longitude];
+        if (category === chosenCategory){
+            crimeResults.push({'cat':category, 'coords': coords});
+        }
+    }
+}
+/* Selection of country */
+/* Selection of location */
+var lat = londonLatLng[0]; // End up with these
+var lon = londonLatLng[1];
+/* Selection of category */
+var categoryURL = buildEnglandWalesApiUrl(lat, lon);
+requestCategory(categoryURL, 'burglary');
+console.log(crimeResults);
+/* Add markers of crimes to map */
