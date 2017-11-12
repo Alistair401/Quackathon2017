@@ -114,7 +114,7 @@ app.post('/input', upload.single('data'), function (req, res) {
                         command: command,
                         wish: wish
                     });
-                } else if (command == 'restroom' || command == 'toilet') {
+                } else if (command == 'restrooms' || command == 'toilets') {
                     res.json({
                         command: command
                     });
