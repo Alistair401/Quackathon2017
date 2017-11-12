@@ -62,6 +62,16 @@ app.get('/crime', function (req, res) {
             }
         });
 });
+app.get('/restroom',function (req, res) {
+    var latitude = parseFloat(req.query.lat);
+    var longitude = parseFloat(req.query.lng);
+    console.log('DEBUG: getting crimes around: '+latitude+','+longitude);
+    var restroomURL = buildRestroomApiUrl(req.query.lat, req.query.lng);
+    requestRestroom(restroomURL, (info) => {
+       console.log('DEBUG: restroom found: '+info.length);
+       res.json(info);
+    });
+});
 app.post('/input', upload.single('data'), function (req, res) {
     var filepath = 'uploads/' + req.file.filename;
     ffmpeg(filepath)
@@ -103,6 +113,11 @@ app.post('/input', upload.single('data'), function (req, res) {
                     res.json({
                         command: command,
                         wish: wish
+                    });
+                }
+                else if (command == 'restroom'||command == 'toilet') {
+                    res.json({
+                        command: command
                     });
                 }
                 fs.unlinkSync(filepath);
@@ -156,4 +171,32 @@ function processCrimeResults(result, political) {
         });
     }
     return [];
+}
+
+/* Construct Restroom API url */
+function buildRestroomApiUrl(latitude, longitude) {
+    var CONST_RESTROOM_URL = 'https://www.refugerestrooms.org:443/api/v1/restrooms/by_location.json?lat=';
+    var CONST_RESTROOM_URL_2 = '&lng=';
+    return CONST_RESTROOM_URL + latitude + CONST_RESTROOM_URL_2 + longitude;
+}
+
+/* Make request of Restroom API (https://www.refugerestrooms.org/api/docs/)*/
+function requestRestroom(apiURL,success) {
+    request.get(apiURL, function (error, response, body) {
+        if (response.statusCode === 200) {
+            var results = JSON.parse(body);
+            success(processRestroomResults(results));
+        }
+    })
+}
+
+/* Add all Restroom results of chosen category to global array */
+function processRestroomResults(result) {
+    return result.map((entry) => {
+        return {
+            name: entry.name,
+            lat: entry.latitude,
+            lng: entry.longitude
+        }
+    });
 }
