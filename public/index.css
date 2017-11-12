@@ -3,14 +3,25 @@ html, body {
     height: 100%;
     margin: 0;
 }
+#map-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
 
 #map {
-    height: 100%;
+    height: 90%;
     width: 100%;
 }
 
 #mic {
-    position: absolute;
-    top: 50px;
-    right: 0px;
+    z-index: 9999;
+    width: 100%;
+    height: 90%;
+    position: relative;
+}
+.recordBtn {
+    margin-bottom: 0;
+    height: 10%;
+    width:100%
 }
