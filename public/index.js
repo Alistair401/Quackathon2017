@@ -9,6 +9,9 @@ var media_chunks = null;
 var map;
 var markers = new Set();
 
+var seenCategories = {};
+var iconColors = ['white', 'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue', 'purple', 'darkpurple', 'pink', 'cadetblue', 'white', 'gray', 'lightgray', 'black'];
+
 function record() {
     if (!recording) {
         recording = true;
@@ -83,7 +86,22 @@ function getCrime(lat, lng, filter) {
 
 function createMarker(lat, lng, category) {
     if (lat && lng) {
-        var m = L.marker([lat, lng]);
+        var randomColor;
+        if (seenCategories.hasOwnProperty(category)) {
+            randomColor = seenCategories[category];
+        } else {
+            randomColor = iconColors[Math.floor(Math.random() * iconColors.length)];
+            seenCategories[category] = randomColor;
+        }
+        var customIcon = L.AwesomeMarkers.icon({
+            prefix: 'ion',
+            icon: 'locked',
+            markerColor: randomColor
+        });
+        var m = L.marker([lat, lng], {
+            icon: customIcon
+        });
+        m.bindPopup(`crime: ${category}`);
         m['category'] = category.toLowerCase();
         m.addTo(map);
         markers.add(m);
