@@ -87,7 +87,10 @@ app.post('/input', upload.single('data'), function (req, res) {
                     });
                 } else if (command == 'filter') {
                     request.get('https://api.datamuse.com/words?ml=' + encodeURIComponent(wish), function (error, response, body) {
-                        res.json(JSON.parse(body).map((entry) => entry.word));
+                        res.json({
+                            command: command,
+                            filters: [...JSON.parse(body).map((entry) => entry.word), wish]
+                        });
                     });
                 } else if (command == 'zoom') {
                     if (wish == 'in' || wish == 'out') {
@@ -164,8 +167,8 @@ function processCrimeResults(result, political) {
         return result.map((entry) => {
             return {
                 category: entry.category,
-                lat: entry.latitude,
-                lng: entry.longitude
+                lat: entry.location.latitude,
+                lng: entry.location.longitude
             }
         });
     }
@@ -178,15 +181,15 @@ function processCrimeResults(result, political) {
 var location = false;
 var crime_category = false;
 
-if (location) {
-    // get [lat,lng] coords
-    // get country for api choice
-
-} else if (crime_category) { // use client location by default
-    var coordObject = localStorage.getItem('client_coords');
-    var coords = JSON.parse(coordObject);
-    var ukURL = buildEnglandWalesApiUrl(coords[0], coords[1]);
-    var crimeArrayUK = requestCategoryUK(ukURL, crime_category);
-
-}
+//if (location) {
+//    // get [lat,lng] coords
+//    // get country for api choice
+//
+//} else if (crime_category) { // use client location by default
+//    var coordObject = localStorage.getItem('client_coords');
+//    var coords = JSON.parse(coordObject);
+//    var ukURL = buildEnglandWalesApiUrl(coords[0], coords[1]);
+//    var crimeArrayUK = requestCategoryUK(ukURL, crime_category);
+//
+//}
 /* Add markers of crimes to map */

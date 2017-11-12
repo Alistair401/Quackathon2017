@@ -7,6 +7,7 @@ var media_recorder = null;
 var media_chunks = null;
 
 var map;
+var markers = new Set();
 
 function record() {
     if (!recording) {
@@ -54,6 +55,9 @@ function record() {
                         var coords = map.getCenter();
                         getCrime(coords.lat, coords.lng, data.wish);
                     }
+                    if (data.command == 'filter') {
+                        filterMarkers(data.filters);
+                    }
                 }
             });
             media_chunks = null;
@@ -69,18 +73,42 @@ function record() {
 function getCrime(lat, lng, filter) {
     $.get('./crime', {
         lat: lat,
-        lng: lng,
-        filter: filter
+        lng: lng
     }, (data, status, jqXHR) => {
-        console.log(data);
         data.forEach((entry) => {
             createMarker(entry.lat, entry.lng, entry.category);
-        })
+        });
     });
 }
 
 function createMarker(lat, lng, category) {
-    L.marker([lat, lng]).addTo(map);
+    if (lat && lng) {
+        var m = L.marker([lat, lng]);
+        m['category'] = category.toLowerCase();
+        m.addTo(map);
+        markers.add(m);
+    }
+}
+
+function filterMarkers(filters) {
+    var initialLength = markers.length;
+    var toRemove = []
+    markers.forEach((marker) => {
+        var matches = false
+        filters.forEach((filter) => {
+            if (marker.category.includes(filter)) {
+                matches = true;
+            }
+        });
+        if (!matches) {
+            toRemove.push(marker);
+        }
+    });
+    toRemove.forEach((marker) => {
+        marker.removeFrom(map);
+        markers.delete(marker);
+        console.log('DEBUG: removed crime: ' + marker.category);
+    })
 }
 
 $(document).ready(() => {
