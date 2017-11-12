@@ -56,7 +56,6 @@ function record() {
                     }
                     if (data.command == 'crimes') {
                         var coords = map.getCenter();
-                        map.zoomIn(5);
                         getCrime(coords.lat, coords.lng, data.wish);
                     }
                     if (data.command == 'filter') {
@@ -64,7 +63,6 @@ function record() {
                     }
                     if (data.command == 'restroom' || data.command == 'toilet') {
                         var coords = map.getCenter();
-                        map.zoomIn(5);
                         getRestroom(coords.lat, coords.lng);
                     }
                 }
@@ -85,17 +83,9 @@ function getRestroom(lat, lng) {
         lng: lng
     }, (data, status, iqXHR) => {
         data.forEach((entry) => {
-            createMarkerWithName(entry.lat, entry.lng, entry.name);
+            createMarker(entry.lat, entry.lng, `Toilet: ${entry.name}`, entry.name);
         });
     });
-}
-
-function createMarkerWithName(lat, lng, name) {
-    if (lat && lng) {
-        var m = L.marker([lat,lng],{title:name});
-        m.bindPopup(name);
-        m.addTo(map);
-    }
 }
 
 function getCrime(lat, lng, filter) {
@@ -104,12 +94,12 @@ function getCrime(lat, lng, filter) {
         lng: lng
     }, (data, status, jqXHR) => {
         data.forEach((entry) => {
-            createMarker(entry.lat, entry.lng, entry.category);
+            createMarker(entry.lat, entry.lng, `Crime: ${entry.category}`, entry.category);
         });
     });
 }
 
-function createMarker(lat, lng, category) {
+function createMarker(lat, lng, title, category) {
     if (lat && lng) {
         var randomColor;
         if (seenCategories.hasOwnProperty(category)) {
@@ -120,13 +110,13 @@ function createMarker(lat, lng, category) {
         }
         var customIcon = L.AwesomeMarkers.icon({
             prefix: 'ion',
-            icon: 'locked',
+            icon: 'eye',
             markerColor: randomColor
         });
         var m = L.marker([lat, lng], {
             icon: customIcon
         });
-        m.bindPopup(`crime: ${category}`);
+        m.bindPopup(title);
         m['category'] = category.toLowerCase();
         m.addTo(map);
         markers.add(m);
