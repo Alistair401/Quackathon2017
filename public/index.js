@@ -56,7 +56,8 @@ function record() {
                     }
                     if (data.command == 'crimes') {
                         var coords = map.getCenter();
-                        getCrime(coords.lat, coords.lng, data.wish);
+                        var bounds = map.getBounds();
+                        getCrime(coords.lat, coords.lng, bounds);
                     }
                     if (data.command == 'filter') {
                         filterMarkers(data.filters);
@@ -88,10 +89,21 @@ function getRestroom(lat, lng) {
     });
 }
 
-function getCrime(lat, lng, filter) {
+function getCrime(lat, lng, bounds) {
+    var boundsToSend = {
+        ne: {
+            lat: bounds._northEast.lat,
+            lng: bounds._northEast.lng
+        },
+        sw: {
+            lat: bounds._southWest.lat,
+            lng: bounds._southWest.lng
+        }
+    }
     $.get('./crime', {
         lat: lat,
-        lng: lng
+        lng: lng,
+        bounds: boundsToSend
     }, (data, status, jqXHR) => {
         data.forEach((entry) => {
             createMarker(entry.lat, entry.lng, `Crime: ${entry.category}`, entry.category);

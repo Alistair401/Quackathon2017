@@ -43,7 +43,7 @@ app.get('/crime', function (req, res) {
             if (results.length > 0) {
                 var political = results[0].formatted_address.toLowerCase().trim();
                 if (political.toLowerCase().includes('uk')) {
-                    var englandWalesURL = buildEnglandWalesApiUrl(req.query.lat, req.query.lng);
+                    var englandWalesURL = buildEnglandWalesApiUrl(req.query.bounds);
                     requestCategoryUK(englandWalesURL, (info) => {
                         console.log('DEBUG: crimes found: ' + info.length);
                         res.json(info);
@@ -62,14 +62,14 @@ app.get('/crime', function (req, res) {
             }
         });
 });
-app.get('/restroom',function (req, res) {
+app.get('/restroom', function (req, res) {
     var latitude = parseFloat(req.query.lat);
     var longitude = parseFloat(req.query.lng);
-    console.log('DEBUG: getting crimes around: '+latitude+','+longitude);
+    console.log('DEBUG: getting crimes around: ' + latitude + ',' + longitude);
     var restroomURL = buildRestroomApiUrl(req.query.lat, req.query.lng);
     requestRestroom(restroomURL, (info) => {
-       console.log('DEBUG: restroom found: '+info.length);
-       res.json(info);
+        console.log('DEBUG: restroom found: ' + info.length);
+        res.json(info);
     });
 });
 app.post('/input', upload.single('data'), function (req, res) {
@@ -114,8 +114,7 @@ app.post('/input', upload.single('data'), function (req, res) {
                         command: command,
                         wish: wish
                     });
-                }
-                else if (command == 'restroom'||command == 'toilet') {
+                } else if (command == 'restroom' || command == 'toilet') {
                     res.json({
                         command: command
                     });
@@ -130,10 +129,9 @@ app.post('/input', upload.single('data'), function (req, res) {
 app.listen(3000);
 
 /* Construct API url for England and Wales */
-function buildEnglandWalesApiUrl(latitude, longitude) {
-    var CONST_POLICE_URL = 'https://data.police.uk/api/crimes-street/all-crime?lat=';
-    var CONST_POLICE_URL_2 = '&lng=';
-    return CONST_POLICE_URL + latitude + CONST_POLICE_URL_2 + longitude;
+function buildEnglandWalesApiUrl(bounds) {
+    var CONST_POLICE_URL = 'https://data.police.uk/api/crimes-street/all-crime?poly=';
+    return CONST_POLICE_URL + `${bounds.ne.lat},${bounds.ne.lng}:${bounds.ne.lat},${bounds.sw.lng}:${bounds.sw.lat},${bounds.sw.lng}:${bounds.sw.lat},${bounds.ne.lng}`;
 }
 /* Make request of USA Crime API (https://github.com/contra/spotcrime) */
 function requestCategoryUS(loc, success) {
@@ -181,7 +179,7 @@ function buildRestroomApiUrl(latitude, longitude) {
 }
 
 /* Make request of Restroom API (https://www.refugerestrooms.org/api/docs/)*/
-function requestRestroom(apiURL,success) {
+function requestRestroom(apiURL, success) {
     request.get(apiURL, function (error, response, body) {
         if (response.statusCode === 200) {
             var results = JSON.parse(body);
