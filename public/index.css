@@ -32,3 +32,15 @@ body {
     height: 70px;
     font-size: 64px;
 }
+
+#feedback {
+    background-color: white;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    bottom: 10px;
+    left: 10px;
+    position: absolute;
+    font: 30px arial, sans-serif;
+    padding: 4px;
+}

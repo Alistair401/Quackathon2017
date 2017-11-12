@@ -9,6 +9,8 @@ var media_chunks = null;
 var map;
 var markers = new Set();
 
+var feedback;
+
 var seenCategories = {};
 var iconColors = ['white', 'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue', 'purple', 'darkpurple', 'pink', 'cadetblue', 'white', 'gray', 'lightgray', 'black'];
 
@@ -44,10 +46,12 @@ function record() {
                 contentType: false,
                 success: function (data) {
                     if (data.command == 'location') {
+                        feedback.html('Command detected: location');
                         map.fitBounds([[data.bounds.northeast.lat, data.bounds.northeast.lng],
                                        [data.bounds.southwest.lat, data.bounds.southwest.lng]]);
                     }
                     if (data.command == 'zoom') {
+                        feedback.html('Command detected: zoom');
                         if (data.wish == 'in') {
                             map.zoomIn(5);
                         } else {
@@ -55,14 +59,17 @@ function record() {
                         }
                     }
                     if (data.command == 'crimes') {
+                        feedback.html('Command detected: crimes');
                         var coords = map.getCenter();
                         var bounds = map.getBounds();
                         getCrime(coords.lat, coords.lng, bounds);
                     }
                     if (data.command == 'filter') {
+                        feedback.html('Command detected: filter');
                         filterMarkers(data.filters);
                     }
-                    if (data.command == 'restroom' || data.command == 'toilet') {
+                    if (data.command == 'restrooms' || data.command == 'toilets') {
+                        feedback.html('Command detected: toilets');
                         var coords = map.getCenter();
                         getRestroom(coords.lat, coords.lng);
                     }
@@ -157,6 +164,7 @@ function filterMarkers(filters) {
 }
 
 $(document).ready(() => {
+    feedback = $('#feedback');
     map = L.Wrld.map("map", "7a72309b1aeda260fbdb2265317f6f79", {
         center: [56.458882, -2.981787],
         zoom: 28.9,
@@ -176,25 +184,3 @@ $(document).ready(() => {
         }
     });
 });
-
-
-// Geolocation functionality
-var store = require('browser-store');
-if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(function (position) {
-        var location = {
-            'lat': position.coords.latitude,
-            'lon': position.coords.longitude
-        };
-        store.put('client_coords', JSON.stringify(location), function (err) {
-            //=> err === null
-            store.get('client_coords', function (err, value) {
-                //=> err === null
-                if (value !== null) { //=> value === {'lat': lat, 'lon':lon}
-                }
-            })
-        })
-    });
-} else {
-    /* geolocation IS NOT available */
-}
