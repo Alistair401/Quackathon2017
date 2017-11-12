@@ -1,25 +1,29 @@
 <!--Hello Wrld3d-->
 <!DOCTYPE HTML>
+<meta charset="UTF-8">
 <html>
 
 
 <head>
-    <script src="/jquery-3.2.1.js"></script>
+    <script src="jquery-3.2.1.js"></script>
 
     <script src="https://cdn-webgl.wrld3d.com/wrldjs/dist/latest/wrld.js"></script>
     <script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/marker_controller/latest/marker_controller.js"></script>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.1/leaflet.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/ionicons.min.css">
-    <link rel="stylesheet" href="/leaflet.awesome-markers.css">
-    <script src="/leaflet.awesome-markers.min.js"></script>
-    <script src="/jquery-3.2.1.js"></script>
-    <script src="/index.js"></script>
-    <link href="/index.css" rel="stylesheet" />
+    <link rel="stylesheet" href="ionicons.min.css">
+    <link rel="stylesheet" href="leaflet.awesome-markers.css">
+    <script src="leaflet.awesome-markers.min.js"></script>
+    <script src="jquery-3.2.1.js"></script>
+    <script src="jquery-ui.js"></script>
+    <link href="jquery-ui.css" />
+    <script src="index.js"></script>
+    <link href="index.css" rel="stylesheet" />
 </head>
 
 <body>
         <div id="map-wrapper">
+            <div id="dialog-feedback" title="You just said "></div>
             <div id="map"></div>
             <div id='mic'><button class="recordBtn" onclick=record();>Record</button></div>
         </div>

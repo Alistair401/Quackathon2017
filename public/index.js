@@ -43,6 +43,7 @@ function record() {
                 data: fd,
                 contentType: false,
                 success: function (data) {
+                    loadDialog(data.command);
                     if (data.command == 'location') {
                         map.fitBounds([[data.bounds.northeast.lat, data.bounds.northeast.lng],
                                        [data.bounds.southwest.lat, data.bounds.southwest.lng]]);
@@ -163,7 +164,16 @@ $(document).ready(() => {
             }, 1000);
         }
     });
+    $("#dialog-feedback").dialog({
+        autoOpen: false,
+    });
 });
+
+/* Bring up feedback dialog to confirm speech-2-text correctness */
+function loadDialog(resultantWord) {
+    $("#dialog-feedback").text(resultantWord);
+    $("#dialog-feedback").dialog("open");
+}
 
 
 // Geolocation functionality
