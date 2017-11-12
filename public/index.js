@@ -49,17 +49,23 @@ function record() {
                     }
                     if (data.command == 'zoom') {
                         if (data.wish == 'in') {
-                            map.zoomIn(-5);
+                            map.zoomIn(5);
                         } else {
                             map.zoomOut(5);
                         }
                     }
                     if (data.command == 'crimes') {
                         var coords = map.getCenter();
+                        map.zoomIn(5);
                         getCrime(coords.lat, coords.lng, data.wish);
                     }
                     if (data.command == 'filter') {
                         filterMarkers(data.filters);
+                    }
+                    if (data.command == 'restroom' || data.command == 'toilet') {
+                        var coords = map.getCenter();
+                        map.zoomIn(5);
+                        getRestroom(coords.lat, coords.lng);
                     }
                 }
             });
@@ -70,6 +76,25 @@ function record() {
         media_stream.getTracks().forEach((track) => {
             track.stop();
         });
+    }
+}
+
+function getRestroom(lat, lng) {
+    $.get('./restroom', {
+        lat: lat,
+        lng: lng
+    }, (data, status, iqXHR) => {
+        data.forEach((entry) => {
+            createMarkerWithName(entry.lat, entry.lng, entry.name);
+        });
+    });
+}
+
+function createMarkerWithName(lat, lng, name) {
+    if (lat && lng) {
+        var m = L.marker([lat,lng],{title:name});
+        m.bindPopup(name);
+        m.addTo(map);
     }
 }
 
