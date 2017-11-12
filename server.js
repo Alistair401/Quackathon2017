@@ -114,23 +114,6 @@ app.post('/input', upload.single('data'), function (req, res) {
 
 app.listen(3000);
 
-// TODO: Feed in categories dynamically
-var burglaryCategory = 'burglary';
-var arsonCategory = 'criminal-damage-arson';
-var violentCategory = 'violent-crime';
-
-// TODO: Feed in locations dynamically
-var dundeeLatLng = [56.4586, 2.9827];
-var londonLatLng = [51.5074, 0.1278];
-var manchesterLatLng = [53.4808, 2.2426];
-var newyorkLatLng = [40.7128, 74.0060];
-
-
-var currentCountry = '';
-var currentLocation = '';
-var currentCategory = '';
-
-
 /* Construct API url for England and Wales */
 function buildEnglandWalesApiUrl(latitude, longitude) {
     var CONST_POLICE_URL = 'https://data.police.uk/api/crimes-street/all-crime?lat=';
@@ -174,22 +157,3 @@ function processCrimeResults(result, political) {
     }
     return [];
 }
-
-/**
- * INPUT FROM VOICE WILL BE (crime category) OR (location)
- */
-var location = false;
-var crime_category = false;
-
-//if (location) {
-//    // get [lat,lng] coords
-//    // get country for api choice
-//
-//} else if (crime_category) { // use client location by default
-//    var coordObject = localStorage.getItem('client_coords');
-//    var coords = JSON.parse(coordObject);
-//    var ukURL = buildEnglandWalesApiUrl(coords[0], coords[1]);
-//    var crimeArrayUK = requestCategoryUK(ukURL, crime_category);
-//
-//}
-/* Add markers of crimes to map */

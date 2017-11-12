@@ -5,15 +5,16 @@ A webpage for visualising public APIs upon the WRLD map, facilitated by voice in
 
 ### Installing
 
-This project has been developed and tested across several platforms, including Ubuntu 16.05 LTS, iOS?.
+This project has been developed and tested across several platforms, including Ubuntu 16.04 LTS, iOS10.
 
 This project includes Node.js, and requires the following packages:
 
 ```
-npm express
-npm request
-npm browser-store
-npm spotcrime
+$ npm install express
+$ npm install request
+$ npm install --save browser-store 
+$ npm install spotcrime
+$ npm install --save multer
 ```
 ## License
 
