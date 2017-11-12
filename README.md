@@ -13,8 +13,12 @@ This project includes Node.js, and requires the following packages:
 $ npm install express
 $ npm install request
 $ npm install --save browser-store 
-$ npm install spotcrime
+$ npm install --save spotcrime
 $ npm install --save multer
+$ npm install --save bingspeech-api-client
+$ npm install --save body-parser
+$ npm install --save fs
+$ npm install --save fluent-fmpeg
 ```
 ## License
 
